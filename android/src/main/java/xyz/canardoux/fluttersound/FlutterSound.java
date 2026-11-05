@@ -22,7 +22,37 @@ import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
 
+import xyz.canardoux.TauEngine.Flauto;
+
+public class FlutterSound
+	implements FlutterPlugin,
+	           ActivityAware
+{
+	FlutterPlugin.FlutterPluginBinding pluginBinding;
+
+	@Override
+	public void onAttachedToEngine ( FlutterPlugin.FlutterPluginBinding binding )
+	{
+		this.pluginBinding = binding;
+
+		new MethodChannel(binding.getBinaryMessenger(), "xyz.canardoux.flutter_sound_bgservice").setMethodCallHandler(new MethodCallHandler() {
+			@Override
+			public void onMethodCall ( final MethodCall call, final Result result )
+			{
+				if (call.method.equals("setBGService")) {
+					attachFlauto();
+				}
+				result.success(0);
+			}
+		});
+	}
 	@Override
 	public void onDetachedFromEngine ( FlutterPlugin.FlutterPluginBinding binding )
 	{
